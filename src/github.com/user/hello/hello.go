@@ -10,8 +10,19 @@ import (
 type mpdCommand struct {
 	port int32
 	address string
-	zz string
+	rawResult string
+	parsedResult map[string]string
 }
+
+
+func (mpd *mpdCommand) ParseCommandOutput() {
+	mpd.parsedResult["test"] = "test"	
+	//TODO write this
+	//split at end of line
+	//omit first and last lines
+	// break at : delimiter
+}
+	
 
 
 func (mpd *mpdCommand) RunCommand(command string) {
@@ -25,8 +36,7 @@ func (mpd *mpdCommand) RunCommand(command string) {
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		templine := scanner.Text();
-		mpd.zz = fmt.Sprintf("%s\n%s", mpd.zz, templine)
-/* 		fmt.Print(mpd.zz) */
+		mpd.rawResult = fmt.Sprintf("%s\n%s", mpd.rawResult, templine)
 		if templine == "OK" {
 		  return
 		}
@@ -38,8 +48,10 @@ func main() {
 	s := mpdCommand{}
 	s.port = 6600
 	s.address = "192.168.0.31"
-	s.RunCommand("currentsong")
+	s.parsedResult = make(map[string]string)
+/* 	s.RunCommand("currentsong") */
 	s.RunCommand("stats")
-	fmt.Printf("%s\r\n", s.zz)
+	fmt.Printf("%s\r\n", s.rawResult)
+	fmt.Printf("", s.parsedResult)
 }
 
